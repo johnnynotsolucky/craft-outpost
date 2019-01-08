@@ -32,13 +32,9 @@ class SettingsController extends Controller
         return $this->redirectToPostedUrl();
     }
 
-    public function actionClear()
+    public function actionPurge()
     {
-        foreach (Plugin::TABLES as $table) {
-            Craft::$app->db->createCommand()
-                ->delete($table['table'])
-                ->execute();
-        }
+        Plugin::getInstance()->purge->all();
     }
 
     private function renderSettings($settings = null)

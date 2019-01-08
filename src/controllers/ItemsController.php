@@ -117,7 +117,7 @@ class ItemsController extends Controller
             throw new HttpException(404);
         }
 
-        $pages = new Pagination(['pageSize' => 10, 'page' => $page, 'totalCount' => (clone $query)->count()]);
+        $pages = new Pagination(['pageSize' => 100, 'page' => $page, 'totalCount' => (clone $query)->count()]);
 
         if ($page >= $pages->pageCount && $page != 0) {
             throw new HttpException(404);

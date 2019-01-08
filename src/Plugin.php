@@ -81,6 +81,10 @@ class Plugin extends BasePlugin
     {
         parent::init();
 
+        $this->setComponents([
+            'purge' => \johnnynotsolucky\outpost\services\Purge::class,
+        ]);
+
         Event::on(
             UrlManager::class,
             UrlManager::EVENT_REGISTER_CP_URL_RULES,

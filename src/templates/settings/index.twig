@@ -6,19 +6,6 @@
 
 {% set content %}
   <form action="" method="post" accept-charset="UTF-8">
-    <input type="hidden" name="action" value="outpost/settings/clear">
-    {{ redirectInput('outpost/settings') }}
-    {{ csrfInput() }}
-    <div>
-      <input type="submit" class="icon btn submit" value="{{ "Clear Requests"|t('outpost') }}">
-      <span class="warning" style="margin-left: 8px">
-        <span data-icon="alert"></span>
-        This action will remove all stored request data
-      </span>
-    </div>
-  </form>
-
-  <form action="" method="post" accept-charset="UTF-8">
     <input type="hidden" name="action" value="outpost/settings/save">
     {{ redirectInput('outpost/settings') }}
     {{ csrfInput() }}
@@ -32,11 +19,12 @@
     }) }}
 
     {{ forms.textField({
-        label: "Purge Limit"|t('outpost'),
+        label: "Automatic Purge Storage Limit"|t('outpost'),
         instructions: "Maximum number of requests to keep in the database at any given time. Set to zero to disable purging of requests."|t('outpost'),
         id: 'purgeLimit',
         name: 'settings[purgeLimit]',
         value: settings.purgeLimit,
+        warning: (not craft.app.config.general.devMode and settings.purgeLimit > 0 ? 'Automatic purging should be disabled on production sites.'|t('outpost')),
         errors: settings.getErrors('purgeLimit')
     }) }}
 
@@ -46,7 +34,7 @@
         id: 'requestSampling',
         name: 'settings[requestSampling]',
         on: settings.requestSampling,
-        warning: (not craft.app.config.general.devMode and not settings.requestSampling ? 'It is recommended to enable request sampling for production.'|t('outpost'))
+        warning: (not craft.app.config.general.devMode and not settings.requestSampling ? 'Request sampling should be enabled for production sites.'|t('outpost'))
     }) }}
 
     {{ forms.selectField({
@@ -74,6 +62,19 @@
     }) }}
 
     <input type="submit" class="btn submit" value="{{ "Save"|t('outpost') }}">
+  </form>
+
+  <form style="margin-top: 24px" action="" method="post" accept-charset="UTF-8">
+    <input type="hidden" name="action" value="outpost/settings/purge">
+    {{ redirectInput('outpost/settings') }}
+    {{ csrfInput() }}
+    <div>
+      <input type="submit" class="icon btn submit" value="{{ "Purge Requests"|t('outpost') }}">
+      <span class="warning" style="margin-left: 8px">
+        <span data-icon="alert"></span>
+        This action will remove all stored request data
+      </span>
+    </div>
   </form>
 {% endset %}
 

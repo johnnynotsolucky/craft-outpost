@@ -185,31 +185,8 @@ class StorageTarget extends Target
                 $this->items[$key] = [];
             }
 
-            // Purge
-            $purgeLimit = $settings->purgeLimit;
-            if ($purgeLimit > 0) {
-                $queryA = (new Query())
-                    ->select(['requestId'])
-                    ->from('{{%outpost_requests}}')
-                    ->orderBy(['timestamp' => SORT_DESC])
-                    ->groupBy('requestId')
-                    ->limit($purgeLimit);
-
-                $queryB = (new Query())
-                    ->select(['requestId'])
-                    ->from(['r' => $queryA]);
-
-                foreach (Plugin::TABLES as $key => $table) {
-                    if ($key !== Plugin::TYPE_REQUEST) {
-                        Craft::$app->db->createCommand()
-                            ->delete($table['table'], ['not in', 'requestId', $queryB])
-                            ->execute();
-                    }
-                }
-
-                Craft::$app->db->createCommand()
-                    ->delete('{{%outpost_requests}}', ['not in', 'requestId', $queryB])
-                    ->execute();
+            if ($settings->purgeLimit > 0) {
+                Plugin::getInstance()->purge->old($settings->purgeLimit);
             }
         }
     }
