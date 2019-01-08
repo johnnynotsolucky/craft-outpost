@@ -1,0 +1,68 @@
+{% extends "_layouts/cp" %}
+
+{% do view.registerAssetBundle("\\johnnynotsolucky\\outpost\\bundles\\ResourceBundle") %}
+{% do view.registerAssetBundle("craft\\web\\assets\\prismjs\\PrismJsAsset") %}
+{% do view.registerAssetBundle("\\johnnynotsolucky\\outpost\\bundles\\PrismJsBundle") %}
+
+{% set title = 'Request '~request.requestId|t('outpost') %}
+{% set selectedSubnavItem = 'requests' %}
+
+{% if selectedItem is not defined %}
+    {% set selectedItem = craft.app.request.getSegment(4) %}
+
+    {% if selectedItem is null %}
+      {% set selectedItem = 'details' %}
+    {% endif %}
+{% endif %}
+
+{% set navItems = {
+    'details': { title: "Details"|t('outpost') },
+    'events': { title: "Events"|t('outpost') },
+    'exceptions': { title: "Exceptions"|t('outpost') },
+    'profiling': { title: "Profiling"|t('outpost') },
+    'logs': { title: "Logs"|t('outpost') },
+} %}
+
+{% block sidebar %}
+    <nav>
+        <ul>
+            {% for id, item in navItems %}
+                {% if item.heading is defined %}
+                    <li class="heading"><span>{{ item.heading }}</span></li>
+                {% else %}
+                    <li>
+                        <a href="{{ url('outpost/requests/'~request.requestId~'/'~id) }}"{% if id == selectedItem %} class="sel"{% endif %}>{{ item.title }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </nav>
+{% endblock %}
+
+
+{# {% block details %}
+
+    <div class="meta readonly">
+      <div class="data">
+            <h5 class="heading">When</h5>
+            <div class="value">{{ request.timestamp }}</div>
+        </div>
+        <div class="data">
+            <h5 class="heading">Host</h5>
+            <div class="value">{{ request.hostname }}</div>
+        </div>
+        <div class="data">
+            <h5 class="heading">Request</h5>
+            <div class="value"><code class="language-*">{{request.method}}</code> {{request.path}}</div>
+        </div>
+        <div class="data">
+            <h5 class="heading">Status Code</h5>
+            <div class="value highlight"><code class="language-*">{{ request.statusCode }}</code></div>
+        </div>
+        <div class="data">
+            <h5 class="heading">Request Duration</h5>
+            <div class="value">{{ request.duration|round(1) }}ms</div>
+        </div>
+    </div>
+
+{% endblock %} #}

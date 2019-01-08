@@ -1,0 +1,43 @@
+{% extends "outpost/request/_layout" %}
+
+{% set content %}
+  {% if exceptions | length %}
+      {% if exceptions|length == 1 %}
+        {% redirect('outpost/requests/'~exceptions[0].requestId)~'/exceptions/'~exceptions[0].id %}
+      {% else %}
+        <table class="data fullwidth outpost-logs-table">
+            <thead>
+                <tr>
+                    <th class="thin" scope="col"></th>
+                    <th scope="col">{{ "Class" | t('outpost') }}</th>
+                    <th scope="col">{{ "Message" | t('outpost') }}</th>
+                    <th scope="col">{{ "When" | t('outpost') }}</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for exception in exceptions %}
+                <tr>
+                    <td class="thin">
+                        <a class="btn submit icon livepreviewbtn" href="{{ url('/admin/outpost/requests/'~request.requestId~'/exceptions/'~exception.id) }}">
+                            {{ "View"|t('outpost') }}
+                        </a>
+                    </td>
+                    <td class="col-label" data-title="{{ 'Class' | t('outpost') }}">
+                        {{ exception.class }}
+                    </td>
+                    <td class="col-label" data-title="{{ 'Message' | t('outpost') }}">
+                        {{ exception.message }}
+                    </td>
+                    <td data-title="{{ 'When' | t('outpost') }}" style="width: 140px;">
+                        <code>{{ exception.timestamp }}</code>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+      {% endif %}
+  {% else %}
+      <p>{{ 'No exceptions recorded.' | t('outpost') }}</p>
+  {% endif %}
+{% endset %}

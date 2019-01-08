@@ -1,0 +1,33 @@
+{% extends "outpost/request/_layout" %}
+
+{% set content %}
+  <div class="meta read-only">
+      <div class="data">
+          <h5 class="heading">When</h5>
+          <div class="value">{{ exception.timestamp }}</div>
+      </div>
+      <div class="data">
+          <h5 class="heading">Class</h5>
+          <div class="value">{{ exception.class }}</div>
+      </div>
+      <div class="data">
+          <h5 class="heading">Message</h5>
+          <div class="value">{{ exception.message }}</div>
+      </div>
+  </div>
+
+  <div class="meta read-only">
+      <div class="data">
+          <h5 class="heading fullwidth">Stack Trace</h5>
+      </div>
+      <div class="call-stack">
+          <ul>
+              {% for stackTrace in stacks %}
+                  {{stackTrace|raw}}
+              {% endfor %}
+          </ul>
+      </div>
+  </div>
+
+{% endset %}
+

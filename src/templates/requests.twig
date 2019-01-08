@@ -1,0 +1,102 @@
+{% import "_includes/forms" as forms %}
+
+{% extends "outpost/_layout" %}
+
+{% set title = 'Requests'|t('outpost') %}
+{% set selectedSubnavItem = 'requests' %}
+
+{% set params = {
+  status: selectedStatus is defined ? selectedStatus : null,
+  method: selectedMethod is defined ? selectedMethod : null,
+  searchQuery: searchQuery is defined ? searchQuery : null,
+}%}
+
+{% set byHash = byHash is defined ? byHash : false %}
+
+{% block actionButton %}
+  {% if not byHash %}
+    <a class="btn submit" title="View grouped requests" href="{{url('outpost/grouped/requests')}}">Grouped Requests</a>
+  {% endif %}
+{% endblock %}
+
+{% set content %}
+  {% if not byHash %}
+    <form action="" method="get">
+        <div class="toolbar">
+            <div class="flex">
+                <div>
+                {{ forms.selectField({
+                    id: 'status',
+                    name: 'status',
+                    value: selectedStatus,
+                    options: statuses
+                }) }}
+                </div>
+                <div>
+                {{ forms.selectField({
+                    id: 'method',
+                    name: 'method',
+                    value: selectedMethod,
+                    options: methods
+                }) }}
+                </div>
+                <div class="flex-grow texticon search icon clearable">
+                    <input class="text fullwidth" id="searchQuery" name="searchQuery" type="text" value="{{searchQuery}}" placeholder="{{'Search requests'|t('outpost')}}">
+                </div>
+                <input type="submit" class="btn submit" value="{{ "Filter"|t('outpost') }}">
+                <a href="{{url('outpost/requests')}}" class="btn primary">{{ 'Clear'|t('outpost') }}</a>
+            </div>
+        </div>
+    </form>
+  {% endif %}
+  {% if requests | length %}
+      <table class="data fullwidth outpost-logs-table">
+          <thead>
+              <tr>
+                  <th class="thin" scope="col"></th>
+                  <th scope="col">{{ "Path" | t('outpost') }}</th>
+                  <th scope="col">{{ "Status" | t('outpost') }}</th>
+                  <th scope="col">{{ "When" | t('outpost') }}</th>
+              </tr>
+          </thead>
+
+          <tbody>
+              {% for request in requests %}
+              <tr>
+                  <td class="thin">
+                      <a class="btn submit icon livepreviewbtn" href="{{ url('/admin/outpost/requests/'~request.requestId) }}">
+                          {{ "View"|t('outpost') }}
+                      </a>
+                  </td>
+                  <td class="col-label" data-title="{{ 'Path' | t('outpost') }}">
+                      <span class=""><code>{{ request.method }}</code> {{ request.path }}</span>
+                  </td>
+                  <td class="col-label" data-title="{{ 'Status' | t('outpost') }}">
+                      <span class=""><code>{{ request.statusCode }}</code></span>
+                  </td>
+                  <td data-title="{{ 'When' | t('outpost') }}" style="width: 140px;">
+                      <code>
+                          {{ request.timestamp }}
+                      </code>
+                  </td>
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+      {% if not byHash %}
+          <div class="button">
+              {% if pages > 1 and page > 1 %}
+                  {% set params = params|merge({page: page - 1}) %}
+                  <a class="btn primary" style="margin-top:24px" title="View ungrouped requests" href="{{url('outpost/requests/', params)}}">&lt; Previous</a>
+              {% endif %}
+              {{page}} of {{pages}}
+              {% if pages > 1 and page < pages %}
+                  {% set params = params|merge({page: page + 1}) %}
+                  <a class="btn primary" style="margin-top:24px" title="View ungrouped requests" href="{{url('outpost/requests/', params)}}">Next &gt;</a>
+              {% endif %}
+          </div>
+      {% endif %}
+  {% else %}
+      <p>{{ 'No requests recorded yet.' | t('outpost') }}</p>
+  {% endif %}
+{% endset %}

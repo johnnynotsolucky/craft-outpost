@@ -1,0 +1,69 @@
+{% import "_includes/forms" as forms %}
+
+{% extends "outpost/_layout" %}
+
+{% set title = 'Exceptions'|t('outpost') %}
+{% set selectedSubnavItem = 'exceptions' %}
+
+{% block actionButton %}
+  <a class="btn submit" title="View ungrouped exceptions" href="{{url('outpost/exceptions')}}">All Exceptions</a>
+{% endblock %}
+
+{% set content %}
+  <form action="" method="get">
+      <div class="toolbar">
+          <div class="flex">
+              <div>
+              {{ forms.selectField({
+                  id: 'class',
+                  name: 'class',
+                  value: selectedClassHash,
+                  options: classes
+              }) }}
+              </div>
+              <div class="flex-grow texticon search icon clearable">
+                  <input class="text fullwidth" id="searchQuery" name="searchQuery" type="text" value="{{searchQuery}}" placeholder="{{'Search exceptions'|t('outpost')}}">
+              </div>
+              <input type="submit" class="btn submit" value="{{ "Filter"|t('outpost') }}">
+              <a href="{{url('outpost/grouped/exceptions')}}" class="btn primary">{{ 'Clear'|t('outpost') }}</a>
+          </div>
+      </div>
+  </form>
+  {% if exceptions | length %}
+      <table class="data fullwidth outpost-logs-table">
+          <thead>
+              <tr>
+                  <th class="thin" scope="col"></th>
+                  <th scope="col">{{ "Class" | t('outpost') }}</th>
+                  <th scope="col">{{ "Last Message" | t('outpost') }}</th>
+                  <th scope="col">{{ "When" | t('outpost') }}</th>
+              </tr>
+          </thead>
+
+          <tbody>
+              {% for exception in exceptions %}
+              <tr>
+                  <td class="thin">
+                      {% set actionUrl = exception.exceptionCount == 1 ? url('/admin/outpost/requests/'~exception.requestId~'/exceptions/'~exception.id) : url('/admin/outpost/grouped/exceptions/'~exception.classHash) %}
+                      <a class="btn submit icon livepreviewbtn" href="{{ actionUrl }}">
+                          {{ "View"|t('outpost') }}
+                      </a>
+                  </td>
+                  <td class="col-label" data-title="{{ 'Class' | t('outpost') }}">
+                      <span class="request-count"><code>{{ exception.exceptionCount }}</code></span>
+                      {{ exception.class }}
+                  </td>
+                  <td class="col-label" data-title="{{ 'Last Message' | t('outpost') }}">
+                      {{ exception.message }}
+                  </td>
+                  <td data-title="{{ 'When' | t('outpost') }}" style="width: 140px;">
+                      <code>{{ exception.timestamp }}</code>
+                  </td>
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+  {% else %}
+      <p>{{ 'No exceptions recorded.' | t('outpost') }}</p>
+  {% endif %}
+{% endset %}

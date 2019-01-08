@@ -1,0 +1,43 @@
+{% extends "outpost/request/_layout" %}
+
+{% set content %}
+  {% if logs | length %}
+      <table class="data fullwidth outpost-logs-table">
+          <thead>
+              <tr>
+                  <th scope="col" class="thin"></th>
+                  <th scope="col">{{ "Message" | t('outpost') }}</th>
+                  <th scope="col" class="thin">{{ "Level" | t('outpost') }}</th>
+                  <th scope="col">{{ "When" | t('outpost') }}</th>
+              </tr>
+          </thead>
+
+          <tbody>
+              {% for log in logs %}
+              <tr>
+                  <td class="thin">
+                      <a class="btn submit icon livepreviewbtn" href="{{ url('/admin/outpost/requests/'~log.requestId~'/logs/'~log.id) }}">
+                          {{ "View"|t('outpost') }}
+                      </a>
+                  </td>
+                  <td class="col-label" data-title="{{ 'Message' | t('outpost') }}">
+                      <code class="">{{ log.message|length > 50 ? log.message|slice(0, 50)~'…' : log.message }}</code>
+                  </td>
+                  <td class="thin" data-title="{{ 'Level' | t('outpost') }}">
+                      <span class="log-level log-level-{{log.level|lower}}">
+                          <code>{{ log.level }}</code>
+                      </span>
+                  </td>
+                  <td data-title="{{ 'When' | t('outpost') }}" style="width: 140px;">
+                      <code>
+                          {{ log.timestamp }}
+                      </code>
+                  </td>
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+  {% else %}
+      <p>{{ 'No logs recorded yet.' | t('outpost') }}</p>
+  {% endif %}
+{% endset %}

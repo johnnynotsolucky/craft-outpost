@@ -1,0 +1,80 @@
+{% import "_includes/forms" as forms %}
+{% extends "_layouts/cp" %}
+
+{% set title = 'Settings'|t('outpost') %}
+{% set selectedSubnavItem = 'settings' %}
+
+{% set content %}
+  <form action="" method="post" accept-charset="UTF-8">
+    <input type="hidden" name="action" value="outpost/settings/clear">
+    {{ redirectInput('outpost/settings') }}
+    {{ csrfInput() }}
+    <div>
+      <input type="submit" class="icon btn submit" value="{{ "Clear Requests"|t('outpost') }}">
+      <span class="warning" style="margin-left: 8px">
+        <span data-icon="alert"></span>
+        This action will remove all stored request data
+      </span>
+    </div>
+  </form>
+
+  <form action="" method="post" accept-charset="UTF-8">
+    <input type="hidden" name="action" value="outpost/settings/save">
+    {{ redirectInput('outpost/settings') }}
+    {{ csrfInput() }}
+
+    {{ forms.lightswitchField({
+        label: "Include Control Panel Requests"|t('outpost'),
+        instructions: "When enabled, control panel requests will be monitored"|t('outpost'),
+        id: 'includeCpRequests',
+        name: 'settings[includeCpRequests]',
+        on: settings.includeCpRequests
+    }) }}
+
+    {{ forms.textField({
+        label: "Purge Limit"|t('outpost'),
+        instructions: "Maximum number of requests to keep in the database at any given time. Set to zero to disable purging of requests."|t('outpost'),
+        id: 'purgeLimit',
+        name: 'settings[purgeLimit]',
+        value: settings.purgeLimit,
+        errors: settings.getErrors('purgeLimit')
+    }) }}
+
+    {{ forms.lightswitchField({
+        label: "Request Sampling"|t('outpost'),
+        instructions: "Enable logging for roughly 5% of requests. Requests are sampled per unique request method, URL and response code."|t('outpost'),
+        id: 'requestSampling',
+        name: 'settings[requestSampling]',
+        on: settings.requestSampling,
+        warning: (not craft.app.config.general.devMode and not settings.requestSampling ? 'It is recommended to enable request sampling for production.'|t('outpost'))
+    }) }}
+
+    {{ forms.selectField({
+        label: "Minimum Log Level"|t('outpost'),
+        id: 'minimumLogLevel',
+        name: 'settings[minimumLogLevel]',
+        options: logLevelOptions,
+        value: settings.minimumLogLevel,
+    }) }}
+
+    {{ forms.selectField({
+        label: "Minimum Log Level for Exceptions"|t('outpost'),
+        id: 'minimumExceptionLogLevel',
+        name: 'settings[minimumExceptionLogLevel]',
+        options: logLevelOptions,
+        value: settings.minimumExceptionLogLevel,
+    }) }}
+
+    {{ forms.lightswitchField({
+        label: "View Grouped Items"|t('outpost'),
+        instructions: "Group items when possible, e.g. Exceptions by exception class"|t('outpost'),
+        id: 'grouped',
+        name: 'settings[grouped]',
+        on: settings.grouped
+    }) }}
+
+    <input type="submit" class="btn submit" value="{{ "Save"|t('outpost') }}">
+  </form>
+{% endset %}
+
+{# TODO: Add filters to prevent certain URL's from creating logs #}

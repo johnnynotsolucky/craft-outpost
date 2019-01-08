@@ -1,0 +1,46 @@
+{
+  "name": "johnnynotsolucky/outpost",
+  "description": "Debug plugin to track and gain insights on requests to your Craft site",
+  "type": "craft-plugin",
+  "version": "1.0.0",
+  "keywords": [
+    "craft",
+    "cms",
+    "craftcms",
+    "craft-plugin",
+    "logging",
+    "debugging",
+    "debug",
+    "logs"
+  ],
+  "support": {
+    "issues": "https://github.com/johnnynotsolucky/outpost/issues?state=open",
+    "source": "https://github.com/johnnynotsolucky/outpost",
+    "docs": "https://github.com/johnnynotsolucky/outpost",
+    "rss": "https://github.com/johnnynotsolucky/outpost/commits/v2.atom"
+  },
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Tyrone Tudehope",
+      "homepage": "https://github.com/johnnynotsolucky"
+    }
+  ],
+  "require": {
+    "craftcms/cms": "^3.0.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "johnnynotsolucky\\outpost\\": "src/"
+    }
+  },
+  "extra": {
+    "name": "Outpost",
+    "handle": "outpost",
+    "schemaVersion": "1.0.0",
+    "hasCpSettings": true,
+    "hasCpSection": true,
+    "class": "johnnynotsolucky\\outpost\\Plugin",
+    "changelogUrl": "https://raw.githubusercontent.com/johnnynotsolucky/outpost/master/CHANGELOG.md"
+  }
+}

@@ -1,0 +1,80 @@
+{% extends "outpost/request/_layout" %}
+
+{% set content %}
+  <div class="meta read-only">
+      <div class="data">
+          <h5 class="heading">When</h5>
+          <div class="value">{{ request.timestamp }}</div>
+      </div>
+      <div class="data">
+          <h5 class="heading">Host</h5>
+          <div class="value">{{ request.hostname }}</div>
+      </div>
+      <div class="data">
+          <h5 class="heading">Request</h5>
+          <div class="value"><code class="language-*">{{request.method}}</code> {{request.path}}</div>
+      </div>
+      <div class="data">
+          <h5 class="heading">Status Code</h5>
+          <div class="value highlight"><code class="language-*">{{ request.statusCode }}</code></div>
+      </div>
+      <div class="data">
+          <h5 class="heading">Request Duration</h5>
+          <div class="value">{{ request.duration|round(1) }}ms</div>
+      </div>
+  </div>
+
+  <div class="meta read-only">
+      <div class="data">
+          <h5 class="heading fullwidth">Request Headers</h5>
+      </div>
+      <div class="highlight">
+          <pre><code class="language-json">{{ request.requestHeaders }}</code></pre>
+      </div>
+  </div>
+
+  <div class="meta read-only">
+      <div class="data">
+          <h5 class="heading fullwidth">Request Querystring</h5>
+      </div>
+      <div class="highlight">
+          <pre><code class="language-json">{{ request.querystring }}</code></pre>
+      </div>
+  </div>
+
+  <div class="meta read-only">
+      <div class="data">
+          <h5 class="heading fullwidth">Request Params</h5>
+      </div>
+      <div class="highlight">
+          <pre><code class="language-json">{{ request.params }}</code></pre>
+      </div>
+  </div>
+
+  {# <div class="meta read-only">
+      <div class="data">
+          <h5 class="heading">Request Raw Body</h5>
+      </div>
+      <div class="highlight">
+          <pre><code class="language-*">{{ request.payload.body }}</code></pre>
+      </div>
+  </div> #}
+
+  <div class="meta read-only">
+      <div class="data">
+          <h5 class="heading fullwidth">Response Headers</h5>
+      </div>
+      <div class="highlight">
+          <pre><code class="language-json">{{ request.responseHeaders }}</code></pre>
+      </div>
+  </div>
+
+  <div class="meta read-only">
+      <div class="data">
+          <h5 class="heading fullwidth">Response</h5>
+      </div>
+      <div class="highlight">
+          <pre><code class="language-{% if request.isJson %}json{% else %}html{% endif %}">{{ request.response }}</code></pre>
+      </div>
+  </div>
+{% endset %}

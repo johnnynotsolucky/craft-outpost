@@ -1,0 +1,35 @@
+{% extends "outpost/request/_layout" %}
+
+{% set content %}
+<div class="meta read-only">
+    <div class="data">
+        <h5 class="heading">When</h5>
+        <div class="value">{{ timing.timestamp }}</div>
+    </div>
+    <div class="data">
+        <h5 class="heading">Duration</h5>
+        <div class="value">{{ timing.duration|round(1) }}ms</div>
+    </div>
+    <div class="data">
+          <h5 class="heading">Level</h5>
+          <div class="value">{{ timing.level }}</div>
+      </div>
+    <div class="data">
+        <h5 class="heading">Category</h5>
+        <div class="value">{{ timing.category }}</div>
+    </div>
+</div>
+
+<div class="meta read-only">
+    <div class="data">
+        <h5 class="heading">Info</h5>
+    </div>
+    <div class="highlight">
+        {% if timing.category starts with 'yii\\db\\Command' %}
+            <pre><code class="language-sql">{{ timing.info }}</code></pre>
+        {% else %}
+            <pre><code class="language-*">{{ timing.info }}</code></pre>
+        {% endif %}
+    </div>
+</div>
+{% endset %}

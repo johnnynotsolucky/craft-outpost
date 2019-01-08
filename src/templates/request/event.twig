@@ -1,0 +1,40 @@
+{% extends "outpost/request/_layout" %}
+
+{% set content %}
+  <div class="meta read-only">
+      <div class="data">
+          <h5 class="heading">When</h5>
+          <div class="value">{{ event.timestamp }}</div>
+      </div>
+      <div class="data">
+          <h5 class="heading">Name</h5>
+          <div class="value">{{ event.eventName }}</div>
+      </div>
+  </div>
+
+  <div class="meta read-only">
+      <div class="data">
+          <h5 class="heading">Sender</h5>
+          <div class="value">{{ event.senderClass }}</div>
+      </div>
+      <div class="data">
+          <h5 class="heading fullwidth">Sender Data</h5>
+      </div>
+      <div class="highlight">
+          <pre><code class="language-json">{{ event.senderData }}</code></pre>
+      </div>
+  </div>
+
+  <div class="meta read-only">
+      <div class="data">
+          <h5 class="heading">Event Class</h5>
+          <div class="value">{{ event.eventClass }}</div>
+      </div>
+      <div class="data">
+          <h5 class="heading fullwidth">Event Data</h5>
+      </div>
+      <div class="highlight">
+          <pre><code class="language-json">{{ event.data }}</code></pre>
+      </div>
+  </div>
+{% endset %}

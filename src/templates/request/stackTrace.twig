@@ -1,0 +1,38 @@
+    <div class="element-wrap">
+        <div class="element">
+            <span class="item-number">{{index}}.</span>
+            {% if file is not null %}
+                in <code>{{file}}</code>
+            {% endif %}
+            <span class="at">
+                {% if line is not null %}
+                    at line <code>{{line + 1}}</code>
+                {% endif %}
+            </span>
+            {% if method is not null %}
+                <code>
+                    {{ file is not null ? '&ndash;' : '' }}
+                    {% if typeLinks is not null %}
+                        {{ typeLinks|raw }}
+                    {% else %}
+                        {{method}}({{ handler.argumentsToString(args)|raw }})
+                    {% endif %}
+                </code>
+            {% endif %}
+        </div>
+    </div>
+    {% if lines|length > 0 %}
+        <div class="highlight">
+            <pre class="line-numbers" data-start="{{begin}}" data-line="{{line + 1}}">
+                <code class="language-*">
+                {% for i in begin..end %}
+                    {% if lines[i]|length is same as(0) %}\n{% else %}{{handler.traceLine|replace({
+                          '{file}': file,
+                          '{line}': i + 1,
+                          '{html}': lines[i],
+                        })}}{% endif %}
+                {% endfor %}
+                </code>
+            </pre>
+        </div>
+    {% endif %}

@@ -1,0 +1,54 @@
+span.request-count {
+  background: #333f4d;
+  color: #fff;
+  flex-shrink: 1;
+  padding: 3px 7px;
+  font-size: 11px;
+  line-height: 16px;
+  border-radius: 4px;
+}
+
+.meta > .data {
+  padding: 0;
+}
+
+.meta > .data > .heading.fullwidth {
+  min-width: 100%;
+}
+
+pre {
+  white-space: pre-line;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 0.9em !important
+}
+
+span.log-level {
+  background: #333f4d;
+  color: #fff;
+  flex-shrink: 1;
+  padding: 3px 7px;
+  font-size: 11px;
+  line-height: 16px;
+  border-radius: 4px;
+}
+
+span.log-level.log-level-debug, span.log-level.log-level-trace {
+  background: #9be4ff;
+  color: #333f4d;
+}
+
+span.log-level.log-level-info {
+  background: #1f883b;
+}
+
+span.log-level.log-level-warn {
+  background: #ffa600;
+}
+
+span.log-level.log-level-error {
+  background: #f13939;
+}
+
+th.thin, td.thin {
+  width: 7% !important;
+}

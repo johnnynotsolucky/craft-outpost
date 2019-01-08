@@ -1,0 +1,43 @@
+{% extends "outpost/request/_layout" %}
+
+{% set content %}
+  {% if timings | length %}
+      <table class="data fullwidth outpost-logs-table">
+          <thead>
+              <tr>
+                  <th class="thin" scope="col"></th>
+                  <th scope="col">{{ "Duration" | t('outpost') }}</th>
+                  <th scope="col">{{ "Category" | t('outpost') }}</th>
+                  <th scope="col">{{ "Info" | t('outpost') }}</th>
+                  <th scope="col">{{ "When" | t('outpost') }}</th>
+              </tr>
+          </thead>
+
+          <tbody>
+              {% for timing in timings %}
+              <tr>
+                  <td class="thin">
+                      <a class="btn submit icon livepreviewbtn" href="{{ url('/admin/outpost/requests/'~request.requestId~'/timings/'~timing.id) }}">
+                          {{ "View"|t('outpost') }}
+                      </a>
+                  </td>
+                  <td class="col-label" data-title="{{ 'Duration' | t('outpost') }}">
+                      {{ timing.duration|round(1) }}ms
+                  </td>
+                  <td class="col-label" data-title="{{ 'Category' | t('outpost') }}">
+                      {{ timing.category }}
+                  </td>
+                  <td class="col-label" data-title="{{ 'Info' | t('outpost') }}">
+                      {{ timing.info|length > 50 ? timing.info|slice(0, 50)~'…' : timing.info }}
+                  </td>
+                  <td data-title="{{ 'When' | t('outpost') }}" style="width: 140px;">
+                      <code>{{ timing.timestamp }}</code>
+                  </td>
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+  {% else %}
+      <p>{{ 'No exceptions recorded.' | t('outpost') }}</p>
+  {% endif %}
+{% endset %}
