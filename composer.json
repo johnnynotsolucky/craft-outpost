@@ -16,7 +16,7 @@
   "support": {
     "issues": "https://github.com/johnnynotsolucky/outpost/issues?state=open",
     "source": "https://github.com/johnnynotsolucky/outpost",
-    "docs": "https://github.com/johnnynotsolucky/outpost",
+    "docs": "https://github.com/johnnynotsolucky/craft-outpost/blob/master/README.md",
     "rss": "https://github.com/johnnynotsolucky/outpost/commits/v2.atom"
   },
   "license": "proprietary",
