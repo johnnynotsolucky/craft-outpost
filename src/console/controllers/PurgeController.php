@@ -7,6 +7,9 @@ use johnnynotsolucky\outpost\Plugin;
 
 class PurgeController extends Controller
 {
+    /**
+     * @var integer|null Number of requests to keep in the database.
+     */
     public $keep;
 
     public function options($actionID)
@@ -19,6 +22,9 @@ class PurgeController extends Controller
         return ['k' => 'keep'];
     }
 
+    /**
+     * Purge stored request data
+     */
     public function actionIndex()
     {
         if ($this->keep > 0) {
