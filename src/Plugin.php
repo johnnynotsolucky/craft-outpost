@@ -6,7 +6,9 @@ use craft\base\Plugin as BasePlugin;
 use craft\events\RegisterComponentTypesEvent;
 use craft\events\RegisterUrlRulesEvent;
 use craft\events\ExceptionEvent;
+use craft\events\RegisterUserPermissionsEvent;
 use craft\services\Utilities;
+use craft\services\UserPermissions;
 use craft\helpers\FileHelper;
 use craft\helpers\StringHelper;
 use craft\web\UrlManager;
@@ -84,6 +86,24 @@ class Plugin extends BasePlugin
         $this->setComponents([
             'purge' => \johnnynotsolucky\outpost\services\Purge::class,
         ]);
+
+        Event::on(
+            UserPermissions::class,
+            UserPermissions::EVENT_REGISTER_PERMISSIONS,
+            function(RegisterUserPermissionsEvent $event) {
+                $event->permissions['Outpost'] = [
+                    'viewOutpostData' => [
+                        'label' => 'View request data',
+                    ],
+                    'configureOutpost' => [
+                        'label' => 'Configuration',
+                    ],
+                    'purgeOutpostData' => [
+                        'label' => 'Purge data',
+                    ],
+                ];
+            }
+        );
 
         Event::on(
             UrlManager::class,
@@ -183,12 +203,20 @@ class Plugin extends BasePlugin
 
         $item['label'] = Craft::t('outpost', 'Outpost');
         $item['badgeCount'] = 0;
-        $item['subnav'] = [
-            'requests' => ['label' => Craft::t('outpost', 'Requests'), 'url' => "{$groupedUrl}/requests"],
-            'exceptions' => ['label' => Craft::t('outpost', 'Exceptions'), 'url' => "{$groupedUrl}/exceptions"],
-            'logs' => ['label' => Craft::t('outpost', 'Logs'), 'url' => 'outpost/logs'],
-            'settings' => ['label' => Craft::t('outpost', 'Settings'), 'url' => 'outpost/settings'],
-        ];
+
+        $subnav = [];
+        if (Craft::$app->user->checkPermission('viewOutpostData')) {
+            $subnav['requests'] = ['label' => Craft::t('outpost', 'Requests'), 'url' => "{$groupedUrl}/requests"];
+            $subnav['exceptions'] = ['label' => Craft::t('outpost', 'Exceptions'), 'url' => "{$groupedUrl}/exceptions"];
+            $subnav['logs'] = ['label' => Craft::t('outpost', 'Logs'), 'url' => 'outpost/logs'];
+        }
+
+        if (Craft::$app->user->checkPermission('configureOutpost')) {
+            $subnav['settings'] = ['label' => Craft::t('outpost', 'Settings'), 'url' => 'outpost/settings'];
+        }
+
+        $item['subnav'] = $subnav;
+
         return $item;
     }
 

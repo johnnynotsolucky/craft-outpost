@@ -13,11 +13,15 @@ class SettingsController extends Controller
 
     public function actionIndex()
     {
+        $this->requirePermission('configureOutpost');
+
         return $this->renderSettings();
     }
 
     public function actionSave()
     {
+        $this->requirePermission('configureOutpost');
+
         $this->requirePostRequest();
         $postData = Craft::$app->getRequest()->getBodyParam('settings');
         $settings = new Settings($postData);
@@ -34,6 +38,8 @@ class SettingsController extends Controller
 
     public function actionPurge()
     {
+        $this->requirePermission('purgeOutpostData');
+
         Plugin::getInstance()->purge->all();
     }
 

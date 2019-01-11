@@ -13,6 +13,8 @@ class ItemsController extends Controller
 {
     public function actionRequests($id = null, $tab = 'details')
     {
+        $this->requirePermission('viewOutpostData');
+
         if ($id === null) {
             return $this->getAllRequests();
         } else {
@@ -22,6 +24,8 @@ class ItemsController extends Controller
 
     public function actionGroupedRequests($hash = null)
     {
+        $this->requirePermission('viewOutpostData');
+
         if ($hash === null) {
             return $this->getGroupedRequests();
         } else {
@@ -72,6 +76,8 @@ class ItemsController extends Controller
 
     public function actionExceptions($page = 1)
     {
+        $this->requirePermission('viewOutpostData');
+
         $query = (new Query())
             ->select(['*'])
             ->from('{{%outpost_exceptions}}')
@@ -97,6 +103,8 @@ class ItemsController extends Controller
 
     public function actionGroupedExceptions($classHash = null)
     {
+        $this->requirePermission('viewOutpostData');
+
         if ($classHash === null) {
             return $this->getGroupedExceptions();
         } else {
@@ -128,6 +136,8 @@ class ItemsController extends Controller
 
     public function actionLogs()
     {
+        $this->requirePermission('viewOutpostData');
+
         $request = Craft::$app->request;
         $selectedLevel = $request->getParam('level');
         $searchQuery = $request->getParam('searchQuery');
@@ -178,6 +188,8 @@ class ItemsController extends Controller
 
     public function actionLog($requestId, $logId)
     {
+        $this->requirePermission('viewOutpostData');
+
         $log = (new Query())
             ->select(['*'])
             ->from('{{%outpost_logs}}')
@@ -209,6 +221,8 @@ class ItemsController extends Controller
 
     public function actionEvent($requestId, $eventId)
     {
+        $this->requirePermission('viewOutpostData');
+
         $event = (new Query())
             ->select(['*'])
             ->from('{{%outpost_events}}')
@@ -236,6 +250,8 @@ class ItemsController extends Controller
 
     public function actionTiming($requestId, $timingId)
     {
+        $this->requirePermission('viewOutpostData');
+
         $timing = (new Query())
             ->select(['*'])
             ->from('{{%outpost_profiles}}')
@@ -260,6 +276,8 @@ class ItemsController extends Controller
 
     public function actionException($requestId, $exceptionId)
     {
+        $this->requirePermission('viewOutpostData');
+
         $exception = (new Query())
             ->select(['*'])
             ->from('{{%outpost_exceptions}}')
