@@ -157,39 +157,10 @@ class StorageTarget extends Target
                 ]);
             }
 
+            $instance = Plugin::getInstance()->getStorageInstance();
+
             foreach ($this->items as $key => $items) {
-                if ($key === Request::TYPE) {
-                    if (sizeof($items) > 0) {
-                        $id = (new Query())
-                            ->select(['id'])
-                            ->from(Request::TABLE_NAME)
-                            ->where(['requestId' => Plugin::getRequestId()])
-                            ->scalar();
-
-                        $command = Craft::$app->db->createCommand();
-                        if ($id) {
-                            $command->update(Request::TABLE_NAME, $items[0]->toArray(), ['id' => $id]);
-                        } else {
-                            $command->insert(Request::TABLE_NAME, $items[0]->toArray());
-                        }
-                        $command->execute();
-                    }
-                } else {
-                    $modelClass = Plugin::getTableModel($key);
-                    $fields = array_values((new $modelClass())->fields());
-
-                    $rows = array_map(function ($item) {
-                        return array_values($item->toArray());
-                    }, $items);
-
-                    Craft::$app->db->createCommand()
-                        ->batchInsert(
-                            $modelClass::TABLE_NAME,
-                            $fields,
-                            $rows
-                        )
-                        ->execute();
-                }
+                $instance->store($key, $items);
                 $this->items[$key] = [];
             }
 

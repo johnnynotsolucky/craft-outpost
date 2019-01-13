@@ -39,6 +39,8 @@ class Plugin extends BasePlugin
 
     private $storageTarget;
 
+    private $storageInstance;
+
     public $hasCpSection = true;
 
     static function getTableModel($type)
@@ -174,6 +176,16 @@ class Plugin extends BasePlugin
                 }
             }
         }
+    }
+
+    public function getStorageInstance()
+    {
+        if (!$this->storageInstance) {
+            $class = $this->getSettings()->storageClass;
+            $this->storageInstance = new $class();
+        }
+
+        return $this->storageInstance;
     }
 
     public function getCpNavItem()

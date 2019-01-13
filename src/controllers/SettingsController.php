@@ -5,11 +5,15 @@ use Craft;
 use craft\web\Controller;
 use craft\db\Query;
 use yii\log\Logger;
+use yii\base\Event;
 use johnnynotsolucky\outpost\Plugin;
 use johnnynotsolucky\outpost\models\Settings;
+use johnnynotsolucky\outpost\events\RegisterStorageClassEvent;
+use johnnynotsolucky\outpost\storage\DbStorage;
 
 class SettingsController extends Controller
 {
+    const REGISTER_STORAGE_CLASS = 'registerStorageClass';
 
     public function actionIndex()
     {
@@ -48,6 +52,22 @@ class SettingsController extends Controller
         if (!$settings) {
             $settings = Plugin::getInstance()->settings;
         }
+
+        $registerStorageClassEvent = new RegisterStorageClassEvent();
+        $registerStorageClassEvent->storageClasses[] = DbStorage::class;
+
+        Event::trigger(static::class, self::REGISTER_STORAGE_CLASS, $registerStorageClassEvent);
+
+        $storageClasses = [];
+        foreach($registerStorageClassEvent->storageClasses as $class) {
+            if (method_exists($class, 'displayName')) {
+                $storageClasses[] = [
+                    'label' => $class::displayName(),
+                    'value' => $class
+                ];
+            }
+        }
+
         return $this->renderTemplate(
             'outpost/settings/index',
             [
@@ -69,7 +89,8 @@ class SettingsController extends Controller
                         'label' => Craft::t('outpost', 'Trace'),
                         'value' => Logger::LEVEL_TRACE,
                     ]
-                ]
+                ],
+                'availableStorageClasses' => $storageClasses,
             ]
         );
     }

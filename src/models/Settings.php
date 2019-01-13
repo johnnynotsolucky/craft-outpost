@@ -4,6 +4,7 @@ namespace johnnynotsolucky\outpost\models;
 use Craft;
 use craft\base\Model;
 use yii\log\Logger;
+use johnnynotsolucky\outpost\storage\DbStorage;
 
 class Settings extends Model
 {
@@ -18,6 +19,8 @@ class Settings extends Model
     public $minimumExceptionLogLevel = Logger::LEVEL_TRACE;
 
     public $grouped = true;
+
+    public $storageClass = DbStorage::class;
 
     public function rules()
     {
