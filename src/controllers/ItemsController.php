@@ -6,6 +6,11 @@ use craft\web\Controller;
 use craft\db\Query;
 use johnnynotsolucky\outpost\Plugin;
 use johnnynotsolucky\outpost\models\Settings;
+use johnnynotsolucky\outpost\models\Request;
+use johnnynotsolucky\outpost\models\Log;
+use johnnynotsolucky\outpost\models\Exception;
+use johnnynotsolucky\outpost\models\Profile;
+use johnnynotsolucky\outpost\models\Event;
 use yii\web\HttpException;
 use yii\data\Pagination;
 
@@ -601,7 +606,7 @@ class ItemsController extends Controller
 
     private function getRequestData($id)
     {
-        $results = $this->getItemsByRequest(Plugin::TYPE_REQUEST, $id);
+        $results = $this->getItemsByRequest(Request::class, $id);
 
         $request = null;
         if (sizeof($results) > 0) {
@@ -632,7 +637,7 @@ class ItemsController extends Controller
     {
         $request = $this->getRequestData($id);
         $timings = $this->getItemsByRequest(
-            Plugin::TYPE_PROFILE,
+            Profile::class,
             $id,
             ['duration' => SORT_DESC]
         );
@@ -649,7 +654,7 @@ class ItemsController extends Controller
     private function getRequestLogs($id)
     {
         $request = $this->getRequestData($id);
-        $logs = $this->getItemsByRequest(Plugin::TYPE_LOG, $id);
+        $logs = $this->getItemsByRequest(Log::class, $id);
 
         return $this->renderTemplate(
             "outpost/request/logs",
@@ -663,7 +668,7 @@ class ItemsController extends Controller
     private function getRequestExceptions($id)
     {
         $request = $this->getRequestData($id);
-        $exceptions = $this->getItemsByRequest(Plugin::TYPE_EXCEPTION, $id);
+        $exceptions = $this->getItemsByRequest(Exception::class, $id);
 
         return $this->renderTemplate(
             "outpost/request/exceptions",
@@ -677,7 +682,7 @@ class ItemsController extends Controller
     private function getRequestEvents($id)
     {
         $request = $this->getRequestData($id);
-        $events = $this->getItemsByRequest(Plugin::TYPE_EVENT, $id);
+        $events = $this->getItemsByRequest(Event::class, $id);
 
         return $this->renderTemplate(
             "outpost/request/events",
@@ -688,11 +693,11 @@ class ItemsController extends Controller
         );
     }
 
-    private function getItemsByRequest($type, $id, $orderBy = null)
+    private function getItemsByRequest($modelClass, $id, $orderBy = null)
     {
         $items = (new Query())
             ->select(['*'])
-            ->from(Plugin::TABLES[$type]['table'])
+            ->from($modelClass::TABLE_NAME)
             ->where(['requestId' => $id])
             ->orderBy($orderBy ?: ['timestamp' => SORT_DESC])
             ->all();

@@ -80,7 +80,6 @@ class Install extends Migration
     {
         $fields = array_merge([
             'id' => $this->primaryKey(),
-            'type' => $this->string()->notNull(),
             'requestId' => $this->string()->notNull(),
             'timestamp' => $this->integer()->notNull(),
             'dateCreated' => $this->dateTime()->notNull(),

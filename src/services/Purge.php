@@ -5,6 +5,7 @@ use Craft;
 use craft\db\Query;
 use yii\base\Component;
 use johnnynotsolucky\outpost\Plugin;
+use johnnynotsolucky\outpost\models\Request;
 
 class Purge extends Component
 {
@@ -12,7 +13,7 @@ class Purge extends Component
     {
         foreach (Plugin::TABLES as $table) {
             Craft::$app->db->createCommand()
-                ->delete($table['table'])
+                ->delete($table::TABLE_NAME)
                 ->execute();
         }
     }
@@ -23,7 +24,7 @@ class Purge extends Component
 
         $queryA = (new Query())
             ->select(['requestId'])
-            ->from('{{%outpost_requests}}')
+            ->from(Request::TABLE_NAME)
             ->orderBy(['timestamp' => SORT_DESC])
             ->groupBy('requestId')
             ->limit($keep);
@@ -32,16 +33,16 @@ class Purge extends Component
             ->select(['requestId'])
             ->from(['r' => $queryA]);
 
-        foreach (Plugin::TABLES as $key => $table) {
-            if ($key !== Plugin::TYPE_REQUEST) {
+        foreach (Plugin::TABLES as $model) {
+            if ($model !== Request::class) {
                 Craft::$app->db->createCommand()
-                    ->delete($table['table'], ['not in', 'requestId', $queryB])
+                    ->delete($model::TABLE_NAME, ['not in', 'requestId', $queryB])
                     ->execute();
             }
         }
 
         Craft::$app->db->createCommand()
-            ->delete('{{%outpost_requests}}', ['not in', 'requestId', $queryB])
+            ->delete(Request::TABLE_NAME, ['not in', 'requestId', $queryB])
             ->execute();
     }
 }

@@ -21,52 +21,34 @@ use yii\base\Controller;
 use johnnynotsolucky\outpost\utilities\Utility;
 use johnnynotsolucky\outpost\models\Settings;
 use johnnynotsolucky\outpost\targets\StorageTarget;
+use johnnynotsolucky\outpost\models\Request;
+use johnnynotsolucky\outpost\models\Log;
+use johnnynotsolucky\outpost\models\Event as OutpostEvent;
+use johnnynotsolucky\outpost\models\Profile;
+use johnnynotsolucky\outpost\models\Exception;
 
 class Plugin extends BasePlugin
 {
-    const TYPE_REQUEST = 'request';
-    const TYPE_EXCEPTION = 'exception';
-    const TYPE_PROFILE = 'profile';
-    const TYPE_EVENT = 'event';
-    const TYPE_LOG = 'log';
-
     const TABLES = [
-        self::TYPE_REQUEST => [
-            'table' => '{{%outpost_requests}}',
-            'columns' => [
-                'type', 'requestId', 'timestamp', 'hostname', 'method', 'path', 'statusCode',
-                'requestHeaders', 'responseHeaders', 'session', 'response', 'route', 'action',
-                'actionParams', 'isAjax', 'isPjax', 'isFlash', 'isSecureConnection',
-                'startTime', 'endTime', 'memory', 'querystring', 'params', 'hash', 'duration'
-            ]
-        ],
-        self::TYPE_EXCEPTION => [
-            'table' => '{{%outpost_exceptions}}',
-            'columns' => [
-                'type', 'requestId', 'timestamp', 'class', 'shortClass', 'classHash', 'message', 'code', 'file',
-                'line', 'simpleTrace', 'trace'
-            ]
-        ],
-        self::TYPE_LOG => [
-            'table' => '{{%outpost_logs}}',
-            'columns' => ['type', 'requestId', 'timestamp', 'message', 'level', 'category']
-        ],
-        self::TYPE_EVENT => [
-            'table' => '{{%outpost_events}}',
-            'columns' => [
-                'type', 'requestId', 'timestamp', 'eventName', 'eventClass', 'isStatic',
-                'senderClass', 'senderData', 'data'
-            ]
-        ],
-        self::TYPE_PROFILE => [
-            'table' => '{{%outpost_profiles}}',
-            'columns' => ['type', 'requestId', 'timestamp', 'duration', 'category', 'info', 'level', 'seq']
-        ]
+        Request::class,
+        Log::class,
+        OutpostEvent::class,
+        Profile::class,
+        Exception::class,
     ];
 
     private $storageTarget;
 
     public $hasCpSection = true;
+
+    static function getTableModel($type)
+    {
+        foreach (self::TABLES as $model) {
+            if ($model::TYPE === $type) {
+                return $model;
+            }
+        }
+    }
 
     static function getRequestId()
     {
@@ -153,7 +135,7 @@ class Plugin extends BasePlugin
                         }
 
                         $this->storageTarget->addItem([
-                            'type' => self::TYPE_EVENT,
+                            'type' => OutpostEvent::TYPE,
                             'eventName' => $event->name,
                             'eventClass' => '\\'.get_class($event),
                             'isStatic' => !is_object($event->sender),
@@ -176,7 +158,7 @@ class Plugin extends BasePlugin
                             $shortClass = array_pop($parts);
 
                             $this->storageTarget->addItem([
-                                'type' => self::TYPE_EXCEPTION,
+                                'type' => Exception::TYPE,
                                 'class' => $exceptionClass,
                                 'shortClass' => $shortClass,
                                 'classHash' => sha1($exceptionClass),

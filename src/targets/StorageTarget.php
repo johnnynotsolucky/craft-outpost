@@ -2,21 +2,26 @@
 namespace johnnynotsolucky\outpost\targets;
 
 use Craft;
-use johnnynotsolucky\outpost\Plugin;
 use craft\db\Query;
 use yii\base\InvalidConfigException;
 use yii\helpers\VarDumper;
 use yii\log\Logger;
 use yii\log\Target;
+use johnnynotsolucky\outpost\Plugin;
+use johnnynotsolucky\outpost\models\Request;
+use johnnynotsolucky\outpost\models\Log;
+use johnnynotsolucky\outpost\models\Event;
+use johnnynotsolucky\outpost\models\Profile;
+use johnnynotsolucky\outpost\models\Exception;
 
 class StorageTarget extends Target
 {
     private $items = [
-        Plugin::TYPE_REQUEST => [],
-        Plugin::TYPE_EXCEPTION => [],
-        Plugin::TYPE_LOG => [],
-        Plugin::TYPE_EVENT => [],
-        Plugin::TYPE_PROFILE => []
+        Request::TYPE => [],
+        Exception::TYPE => [],
+        Log::TYPE => [],
+        Event::TYPE => [],
+        Profile::TYPE => []
     ];
 
     private $hasException = false;
@@ -30,7 +35,7 @@ class StorageTarget extends Target
 
     public function addItem($item)
     {
-        if ($item['type'] === Plugin::TYPE_EXCEPTION) {
+        if ($item['type'] === Exception::TYPE) {
             $this->hasException = true;
         }
 
@@ -39,11 +44,17 @@ class StorageTarget extends Target
             $item['timestamp'] = time();
         }
 
-        if ($item['type'] === Plugin::TYPE_REQUEST) {
+        $type = $item['type'];
+        unset($item['type']);
+
+        $modelClass = Plugin::getTableModel($type);
+        $model = new $modelClass($item);
+
+        if ($type === Request::TYPE) {
             // Always have only a single item for the Request
-            $this->items[Plugin::TYPE_REQUEST] = [$item];
+            $this->items[Request::TYPE] = [$model];
         } else {
-            $this->items[$item['type']][] = $item;
+            $this->items[$type][] = $model;
         }
     }
 
@@ -112,7 +123,7 @@ class StorageTarget extends Target
                     $matched = [];
                     if (!preg_match('/_outpost_/', $message, $matched)) {
                         $this->addItem([
-                            'type' => Plugin::TYPE_LOG,
+                            'type' => Log::TYPE,
                             'timestamp' => (int) $timestamp,
                             'message' => $message,
                             'level' => $this->getLevelName($level),
@@ -137,7 +148,7 @@ class StorageTarget extends Target
 
             foreach ($timings as $seq => $timing) {
                 $this->addItem([
-                    'type' => Plugin::TYPE_PROFILE,
+                    'type' => Profile::TYPE,
                     'duration' => $timing['duration'] * 1000, // in milliseconds
                     'category' => $timing['category'],
                     'info' => $timing['info'],
@@ -147,38 +158,35 @@ class StorageTarget extends Target
             }
 
             foreach ($this->items as $key => $items) {
-                if ($key === Plugin::TYPE_REQUEST) {
+                if ($key === Request::TYPE) {
                     if (sizeof($items) > 0) {
                         $id = (new Query())
                             ->select(['id'])
-                            ->from('{{%outpost_requests}}')
+                            ->from(Request::TABLE_NAME)
                             ->where(['requestId' => Plugin::getRequestId()])
                             ->scalar();
 
                         $command = Craft::$app->db->createCommand();
                         if ($id) {
-                            $command->update('{{%outpost_requests}}', $items[0], ['id' => $id]);
+                            $command->update(Request::TABLE_NAME, $items[0]->toArray(), ['id' => $id]);
                         } else {
-                            $command->insert('{{%outpost_requests}}', $items[0]);
+                            $command->insert(Request::TABLE_NAME, $items[0]->toArray());
                         }
                         $command->execute();
                     }
                 } else {
-                    $table = Plugin::TABLES[$key];
+                    $modelClass = Plugin::getTableModel($key);
+                    $fields = array_values((new $modelClass())->fields());
 
-                    $items = array_map(function ($item) use ($key) {
-                        $tmp = [];
-                        foreach (Plugin::TABLES[$key]['columns'] as $column) {
-                            $tmp[] = $item[$column];
-                        }
-                        return $tmp;
+                    $rows = array_map(function ($item) {
+                        return array_values($item->toArray());
                     }, $items);
 
                     Craft::$app->db->createCommand()
                         ->batchInsert(
-                            $table['table'],
-                            $table['columns'],
-                            $items
+                            $modelClass::TABLE_NAME,
+                            $fields,
+                            $rows
                         )
                         ->execute();
                 }
@@ -239,7 +247,7 @@ class StorageTarget extends Target
         parse_str(isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '', $querystring);
 
         $data = [
-            'type' => Plugin::TYPE_REQUEST,
+            'type' => Request::TYPE,
             'hostname' => $_SERVER['HTTP_HOST'],
             'method' => $_SERVER['REQUEST_METHOD'],
             'path' => $_SERVER['REQUEST_URI'],
