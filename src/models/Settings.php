@@ -14,6 +14,10 @@ class Settings extends Model
 
     public $requestSampling = false;
 
+    public $sampleRate = 5;
+
+    public $samplePeriod = 60;
+
     public $minimumLogLevel = Logger::LEVEL_INFO;
 
     public $minimumExceptionLogLevel = Logger::LEVEL_TRACE;
@@ -26,7 +30,7 @@ class Settings extends Model
     {
         $rules = [
             [
-                ['purgeLimit', 'minimumLogLevel', 'minimumExceptionLogLevel'],
+                ['purgeLimit', 'sampleRate', 'samplePeriod', 'minimumLogLevel', 'minimumExceptionLogLevel'],
                 'number',
                 'integerOnly' => true
             ],
@@ -34,6 +38,18 @@ class Settings extends Model
                 ['purgeLimit'],
                 'number',
                 'min' => 0
+            ],
+            [
+                ['sampleRate'],
+                'number',
+                'min' => 0,
+                'max' => 100
+            ],
+            [
+                ['samplePeriod'],
+                'number',
+                'min' => 30,
+                'max' => 3600
             ]
         ];
 

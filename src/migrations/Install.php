@@ -31,6 +31,7 @@ class Install extends Migration
             'isPjax' => $this->boolean()->notNull(),
             'isFlash' => $this->boolean()->notNull(),
             'isSecureConnection' => $this->boolean()->notNull(),
+            'sampleSize' => $this->integer()->defaultValue(1),
             'startTime' => $this->integer()->notNull(),
             'endTime' => $this->integer()->notNull(),
             'duration' => $this->integer()->notNull(),

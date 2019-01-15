@@ -30,11 +30,29 @@
 
     {{ forms.lightswitchField({
         label: "Request Sampling"|t('outpost'),
-        instructions: "Enable logging for roughly 5% of requests. Requests are sampled per unique request method, URL and response code."|t('outpost'),
+        instructions: "Enable logging for a sample of requests. Requests are sampled per unique request method, URL and response code."|t('outpost'),
         id: 'requestSampling',
         name: 'settings[requestSampling]',
         on: settings.requestSampling,
         warning: (not craft.app.config.general.devMode and not settings.requestSampling ? 'Request sampling should be enabled for production sites.'|t('outpost'))
+    }) }}
+
+    {{ forms.textField({
+        label: "Request Sample Rate"|t('outpost'),
+        instructions: "Rate at which requests are sampled"|t('outpost'),
+        id: 'sampleRate',
+        name: 'settings[sampleRate]',
+        value: settings.sampleRate,
+        errors: settings.getErrors('sampleRate')
+    }) }}
+
+    {{ forms.textField({
+        label: "Request Sample Period"|t('outpost'),
+        instructions: "Period in seconds to measure the frequency of requests so that the sample rate can be accurately calculated."|t('outpost'),
+        id: 'samplePeriod',
+        name: 'settings[samplePeriod]',
+        value: settings.samplePeriod,
+        errors: settings.getErrors('samplePeriod')
     }) }}
 
     {{ forms.selectField({

@@ -23,6 +23,7 @@ class Request extends Base
     public $isPjax;
     public $isFlash;
     public $isSecureConnection;
+    public $sampleSize;
     public $startTime;
     public $endTime;
     public $memory;

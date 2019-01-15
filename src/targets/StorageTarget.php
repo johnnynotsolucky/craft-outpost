@@ -58,9 +58,13 @@ class StorageTarget extends Target
         }
     }
 
-    private function isInSample($request, $requestSampling)
+    private function isInSample($request)
     {
-        if ($requestSampling) {
+        $settings = Plugin::getInstance()->getSettings();
+
+        $result = false;
+
+        if ($settings->requestSampling) {
             $hash = $request['hash'];
             $key = "request_{$hash}";
             $cache = Craft::$app->getCache();
@@ -69,7 +73,7 @@ class StorageTarget extends Target
             if (!$cached) {
                 $cached = [
                     'start_time' => time(),
-                    'previous_count' => 0,
+                    'sample_size' => 0,
                     'count' => 0,
                 ];
 
@@ -77,37 +81,39 @@ class StorageTarget extends Target
             }
 
             $now = time();
-            if ($now - $cached['start_time'] > 600) { // 10 min sample intervals
-                $cached['previous_count'] = $cached['count'];
+            if ($now - $cached['start_time'] > $settings->samplePeriod) {
+                $totalRequests = (int) ceil($cached['count'] * ($settings->sampleRate / 100));
+                if ($totalRequests > 0) {
+                    $cached['sample_size'] = (int) ceil($cached['count'] / $totalRequests);
+                }
                 $cached['count'] = 0;
                 $cached['start_time'] = $now;
             }
 
-            $cached['count'] += 1;
-            $cache->set($key, $cached);
-
-            if ($cached['previous_count'] > 0) {
-                $sampleRate = (int) ceil($cached['previous_count'] * 0.05);
-
-                if ($cached['count'] % $sampleRate === 0) {
-                    return true;
+            if ($cached['sample_size'] > 0) {
+                if ($cached['count'] % $cached['sample_size'] === 0) {
+                    $result = $cached['sample_size'];
                 }
-
             }
 
-            return false;
+            $cached['count'] += 1;
+            $cache->set($key, $cached);
         }
 
-        return true;
+        return $result;
     }
 
     public function export()
     {
         $settings = Plugin::getInstance()->getSettings();
 
-        $requestData = $this->saveRequest();
+        $requestData = $this->getRequestData();
 
-        if ($this->isInSample($requestData, $settings->requestSampling)) {
+        $requestData['sampleSize'] = $this->isInSample($requestData);
+
+        $this->addItem($requestData);
+
+        if ($requestData['sampleSize']) {
             $profiling = array();
 
             foreach ($this->messages as $message) {
@@ -170,7 +176,7 @@ class StorageTarget extends Target
         }
     }
 
-    private function saveRequest()
+    private function getRequestData()
     {
         $response = Craft::$app->response;
         $response = is_string($response->data)
@@ -261,7 +267,6 @@ class StorageTarget extends Target
         $data['responseHeaders'] = json_encode($data['responseHeaders']);
         $data['params'] = json_encode($data['params']);
 
-        $this->addItem($data);
         return $data;
     }
 
