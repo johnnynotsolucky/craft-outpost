@@ -108,6 +108,7 @@ class Plugin extends BasePlugin
                 $event->rules['outpost/grouped/exceptions/<classHash>'] = 'outpost/items/grouped-exceptions';
                 $event->rules['outpost/exceptions'] = 'outpost/items/exceptions';
                 $event->rules['outpost/logs'] = 'outpost/items/logs';
+                $event->rules['outpost/dashboard'] = 'outpost/dashboard/index';
             }
         );
 
@@ -200,6 +201,7 @@ class Plugin extends BasePlugin
 
         $subnav = [];
         if (Craft::$app->user->checkPermission('viewOutpostData')) {
+            $subnav['dashboard'] = ['label' => Craft::t('outpost', 'Dashboard'), 'url' => 'outpost/dashboard'];
             $subnav['requests'] = ['label' => Craft::t('outpost', 'Requests'), 'url' => "{$groupedUrl}/requests"];
             $subnav['exceptions'] = ['label' => Craft::t('outpost', 'Exceptions'), 'url' => "{$groupedUrl}/exceptions"];
             $subnav['logs'] = ['label' => Craft::t('outpost', 'Logs'), 'url' => 'outpost/logs'];

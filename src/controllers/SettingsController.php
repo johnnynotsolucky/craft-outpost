@@ -53,21 +53,6 @@ class SettingsController extends Controller
             $settings = Plugin::getInstance()->settings;
         }
 
-        $registerStorageClassEvent = new RegisterStorageClassEvent();
-        $registerStorageClassEvent->storageClasses[] = DbStorage::class;
-
-        Event::trigger(static::class, self::REGISTER_STORAGE_CLASS, $registerStorageClassEvent);
-
-        $storageClasses = [];
-        foreach($registerStorageClassEvent->storageClasses as $class) {
-            if (method_exists($class, 'displayName')) {
-                $storageClasses[] = [
-                    'label' => $class::displayName(),
-                    'value' => $class
-                ];
-            }
-        }
-
         return $this->renderTemplate(
             'outpost/settings/index',
             [
@@ -90,7 +75,6 @@ class SettingsController extends Controller
                         'value' => Logger::LEVEL_TRACE,
                     ]
                 ],
-                'availableStorageClasses' => $storageClasses,
             ]
         );
     }

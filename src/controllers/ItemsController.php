@@ -5,7 +5,6 @@ use Craft;
 use craft\web\Controller;
 use craft\db\Query;
 use johnnynotsolucky\outpost\Plugin;
-use johnnynotsolucky\outpost\models\Settings;
 use johnnynotsolucky\outpost\models\Request;
 use johnnynotsolucky\outpost\models\Log;
 use johnnynotsolucky\outpost\models\Exception;

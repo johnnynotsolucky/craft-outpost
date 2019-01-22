@@ -1,0 +1,331 @@
+{% import "_includes/forms" as forms %}
+
+{% extends "outpost/_layout" %}
+
+{% do view.registerAssetBundle("\\johnnynotsolucky\\outpost\\bundles\\ChartJsBundle") %}
+
+{% set title = 'Dashboard'|t('outpost') %}
+{% set selectedSubnavItem = 'dashboard' %}
+
+{% set content %}
+  <form action="" method="get">
+    <div class="toolbar">
+      <div class="flex">
+          <div class="flex-grow clearable">
+
+          </div>
+          <div>
+            {{ forms.checkbox({
+                name: 'cpRequests',
+                label: 'Include CP requests'|t('outpost'),
+                checked: includeCpRequests,
+            }) }}
+          </div>
+          <div>
+            {{ forms.selectField({
+                id: 'span',
+                name: 'span',
+                value: selectedSpan,
+                options: {
+                  '1hr': '1 hour',
+                  '6hr': '6 hours',
+                  '24hr': '24 hours',
+                }
+            }) }}
+          </div>
+          <input type="submit" class="btn submit" value="{{ "Update"|t('outpost') }}">
+      </div>
+    </div>
+  </form>
+  <div class="flex">
+    <div>
+      <canvas id="averageDuration" style="height: 300px;"></canvas>
+    </div>
+    <div>
+      <canvas id="requestsByStatus" style="height: 300px;"></canvas>
+    </div>
+  </div>
+  <div class="flex">
+    <div>
+      <canvas id="busiestRequests" style="height: 300px;"></canvas>
+    </div>
+    <div>
+      <canvas id="slowestRequests" style="height: 300px;"></canvas>
+    </div>
+  </div>
+
+  {% js %}
+
+  const getTime = (unixTimestamp) => {
+    const date = new Date(unixTimestamp * 1000);
+
+    const hours = date.getHours();
+    const minutes = "0" + date.getMinutes();
+
+    return `${hours}:${minutes.substr(-2)}`;
+  }
+
+  const requestsByStatus = () => {
+    const colours = {
+      '1xx': '',
+      '2xx': '#1f883b',
+      '3xx': '#9be4ff',
+      '4xx': '#ffa600',
+      '5xx': '#f13939',
+    }
+
+    const labels = {{requestsByStatus.labels|json_encode|raw}}
+    const datasets = {{requestsByStatus.datasets|json_encode|raw}}
+
+    const ctx = document.getElementById("requestsByStatus").getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels.map(getTime),
+            datasets: Object.keys(datasets).map(key => {
+              return {
+                label: key,
+                type: 'line',
+                data: datasets[key],
+                borderColor: colours[key],
+                backgroundColor: Chart.helpers.color(colours[key]).alpha(0.25).rgbString(),
+                borderWidth: 2,
+                tension: 0,
+                fill: false,
+              }
+            })
+        },
+        options: {
+          responsive: false,
+          title: {
+						display: true,
+						text: 'Requests by Status Code (COUNT)',
+					},
+          tooltips: {
+            mode: 'index',
+            position: 'nearest',
+            intersect: false,
+          },
+          hover: {
+            mode: 'index',
+            intersect: true,
+          },
+          elements: {
+              point:{
+                  radius: 1
+              }
+          },
+          scales: {
+            yAxes: [{
+              type: 'linear',
+              position: 'left',
+              id: 'primary',
+              ticks: {
+                beginAtZero: true,
+              },
+            }]
+          },
+        },
+    })
+  }
+
+  const busiestRequests = () => {
+    const labels = {{busiestRequests.labels|json_encode|raw}}
+    const datasets = {{busiestRequests.datasets|json_encode|raw}}
+
+    const ctx = document.getElementById("busiestRequests").getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels.map(getTime),
+            datasets: Object.keys(datasets).map(key => {
+              const colour = `#${Math.floor(Math.random()*16777215).toString(16)}`
+              console.log(colour)
+              return {
+                label: key,
+                type: 'line',
+                data: datasets[key],
+                borderColor: colour,
+                backgroundColor: Chart.helpers.color(colour).alpha(0.25).rgbString(),
+                borderWidth: 2,
+                tension: 0,
+                fill: false,
+              }
+            })
+        },
+        options: {
+          responsive: true,
+          legend: {
+            display: false
+          },
+          title: {
+						display: true,
+						text: 'Busiest Routes (COUNT)',
+					},
+          tooltips: {
+            mode: 'point',
+            position: 'nearest',
+            intersect: true,
+          },
+          hover: {
+            mode: 'point',
+            intersect: true,
+          },
+          elements: {
+              point:{
+                  radius: 1
+              }
+          },
+          onClick: (e, items) => {
+            const baseUrl = '{{url('outpost/grouped/requests?searchQuery=')}}'
+
+            if (items.length === 1) {
+              const search = items[0]._chart.data.datasets[items[0]._datasetIndex].label
+              window.location.href = `${baseUrl}${search}`
+            }
+          },
+          scales: {
+            yAxes: [{
+              type: 'linear',
+              position: 'left',
+              id: 'primary',
+              ticks: {
+                beginAtZero: true,
+              },
+            }]
+          },
+        },
+    })
+  }
+
+  const slowestRequests = () => {
+    const labels = {{slowestRequests.labels|json_encode|raw}}
+    const datasets = {{slowestRequests.datasets|json_encode|raw}}
+
+    const ctx = document.getElementById("slowestRequests").getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels.map(getTime),
+            datasets: Object.keys(datasets).map(key => {
+              const colour = `#${Math.floor(Math.random()*16777215).toString(16)}`
+              console.log(colour)
+              return {
+                label: key,
+                type: 'line',
+                data: datasets[key],
+                borderColor: colour,
+                backgroundColor: Chart.helpers.color(colour).alpha(0.25).rgbString(),
+                borderWidth: 2,
+                tension: 0,
+                fill: false,
+              }
+            })
+        },
+        options: {
+          responsive: true,
+          legend: {
+            display: false
+          },
+          title: {
+						display: true,
+						text: 'Slowest Routes (95th PERCENTILE)',
+					},
+          tooltips: {
+            mode: 'point',
+            position: 'nearest',
+            intersect: true,
+          },
+          hover: {
+            mode: 'point',
+            intersect: true,
+          },
+          elements: {
+              point:{
+                  radius: 1
+              }
+          },
+          onClick: (e, items) => {
+            const baseUrl = '{{url('outpost/grouped/requests?searchQuery=')}}'
+
+            if (items.length === 1) {
+              const search = items[0]._chart.data.datasets[items[0]._datasetIndex].label
+              window.location.href = `${baseUrl}${search.split(/ /)[1]}`
+            }
+          },
+          scales: {
+            yAxes: [{
+              type: 'linear',
+              position: 'left',
+              id: 'primary',
+              ticks: {
+                beginAtZero: true,
+              },
+            }]
+          },
+        },
+    })
+  }
+
+  const averageDuration = () => {
+    const labels = {{averageDuration.labels|json_encode|raw}}
+    const dataset = {{averageDuration.datasets|json_encode|raw}}
+
+    const ctx = document.getElementById("averageDuration").getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels.map(getTime),
+            datasets: [{
+                type: 'line',
+                data: dataset,
+                borderColor: '#1f883b',
+                backgroundColor: Chart.helpers.color('#1f883b').alpha(0.25).rgbString(),
+                borderWidth: 2,
+                tension: 0,
+                fill: false,
+              }]
+        },
+        options: {
+          responsive: true,
+          legend: {
+            display: false
+          },
+          title: {
+						display: true,
+						text: 'Average Duration (AVERAGE)',
+					},
+          tooltips: {
+            mode: 'index',
+            position: 'nearest',
+            intersect: false,
+          },
+          hover: {
+            mode: 'index',
+            intersect: true,
+          },
+          elements: {
+              point:{
+                  radius: 1
+              }
+          },
+          scales: {
+            yAxes: [{
+              type: 'linear',
+              position: 'left',
+              id: 'primary',
+              ticks: {
+                beginAtZero: true,
+              },
+            }]
+          },
+        },
+    })
+  }
+
+  requestsByStatus()
+  busiestRequests()
+  slowestRequests()
+  averageDuration()
+  {% endjs %}
+{% endset %}

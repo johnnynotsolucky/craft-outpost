@@ -79,14 +79,6 @@
         on: settings.grouped
     }) }}
 
-    {{ forms.selectField({
-        label: "Storage Handler"|t('outpost'),
-        id: 'storageClass',
-        name: 'settings[storageClass]',
-        options: availableStorageClasses,
-        value: settings.storageClass,
-    }) }}
-
     <input type="submit" class="btn submit" value="{{ "Save"|t('outpost') }}">
   </form>
 

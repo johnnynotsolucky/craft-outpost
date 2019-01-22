@@ -98,6 +98,9 @@ class StorageTarget extends Target
 
             $cached['count'] += 1;
             $cache->set($key, $cached);
+        } else {
+            // Sample is 1 request
+            $result = 1;
         }
 
         return $result;
@@ -236,6 +239,7 @@ class StorageTarget extends Target
             'route' => Craft::$app->requestedAction ? Craft::$app->requestedAction->getUniqueId() : Craft::$app->requestedRoute,
             'action' => $action,
             'actionParams' => json_encode(Craft::$app->requestedParams),
+            'isCpRequest' => Craft::$app->request->getIsCpRequest(),
             'isAjax' => Craft::$app->request->getIsAjax(),
             'isPjax' => Craft::$app->request->getIsPjax(),
             'isFlash' => Craft::$app->request->getIsFlash(),

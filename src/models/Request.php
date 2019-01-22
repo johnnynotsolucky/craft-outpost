@@ -19,6 +19,7 @@ class Request extends Base
     public $route;
     public $action;
     public $actionParams;
+    public $isCpRequest;
     public $isAjax;
     public $isPjax;
     public $isFlash;

@@ -27,6 +27,7 @@ class Install extends Migration
             'route' => $this->string()->notNull(),
             'action' => $this->string()->notNull(),
             'actionParams' => $this->getDb()->getSchema()->createColumnSchemaBuilder('longtext')->notNull(),
+            'isCpRequest' => $this->boolean(),
             'isAjax' => $this->boolean()->notNull(),
             'isPjax' => $this->boolean()->notNull(),
             'isFlash' => $this->boolean()->notNull(),
