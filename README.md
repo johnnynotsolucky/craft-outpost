@@ -27,7 +27,9 @@ $ ./craft install/plugin outpost
 
 - **Include Control Panel Requests** - Track Craft Control Panel requests.
 - **Automatic Purge Storage Limit** - The amount of requests to store in the database. Setting to zero disables purging older requests.
-- **Request Sampling** - Only track roughly 5% of incoming requests. Uses whichever cache provider has been configured for Craft. Sampling occurs per unique URL, request method and response code. *Request sampling should be enabled if you intend to use this plugin on a production site.*
+- **Request Sampling** - Only track a sample of incoming requests. Uses whichever cache provider has been configured for Craft. Sampling occurs per unique URL, request method and response code. *Request sampling should be enabled if you intend to use this plugin on a production site.*
+- **Request Sample Rate** - Percentage of requests to sample.
+- **Request Sample Period** - Period in seconds to measure request frequency.
 - **Minimum Log Level** - Minimum log level to store for all requests.
 - **Minimum Log Level for Exceptions** - When an exception is tracked, increase the log output.
 - **View Grouped Items** - When available, group similar tracked items, e.g. Exceptions by exception class.
