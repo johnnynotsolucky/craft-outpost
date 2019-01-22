@@ -2,7 +2,7 @@
   "name": "johnnynotsolucky/outpost",
   "description": "Debug plugin to track and gain insights on requests to your Craft site",
   "type": "craft-plugin",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "keywords": [
     "craft",
     "cms",
@@ -37,7 +37,7 @@
   "extra": {
     "name": "Outpost",
     "handle": "outpost",
-    "schemaVersion": "1.0.0",
+    "schemaVersion": "1.1.0",
     "hasCpSettings": true,
     "hasCpSection": true,
     "class": "johnnynotsolucky\\outpost\\Plugin",
