@@ -24,10 +24,13 @@ class DbStorage extends BaseStorage
                     ->scalar();
 
                 $command = Craft::$app->db->createCommand();
+
+                $data = $this->getModel($type, $items[0])->toArray();
+
                 if ($id) {
-                    $command->update(Request::TABLE_NAME, $items[0]->toArray(), ['id' => $id]);
+                    $command->update(Request::TABLE_NAME, $data, ['id' => $id]);
                 } else {
-                    $command->insert(Request::TABLE_NAME, $items[0]->toArray());
+                    $command->insert(Request::TABLE_NAME, $data);
                 }
                 $command->execute();
             }
@@ -35,8 +38,9 @@ class DbStorage extends BaseStorage
             $modelClass = Plugin::getTableModel($type);
             $fields = array_values((new $modelClass())->fields());
 
-            $rows = array_map(function ($item) {
-                return array_values($item->toArray());
+            $rows = array_map(function ($item) use ($type) {
+                $model = $this->getModel($type, $item);
+                return array_values($model->toArray());
             }, $items);
 
             Craft::$app->db->createCommand()
@@ -47,5 +51,13 @@ class DbStorage extends BaseStorage
                 )
                 ->execute();
         }
+    }
+
+    private function getModel($type, $item)
+    {
+        $modelClass = Plugin::getTableModel($type);
+        $model = new $modelClass($item);
+
+        return $model;
     }
 }

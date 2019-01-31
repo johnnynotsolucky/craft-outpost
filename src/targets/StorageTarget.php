@@ -47,14 +47,11 @@ class StorageTarget extends Target
         $type = $item['type'];
         unset($item['type']);
 
-        $modelClass = Plugin::getTableModel($type);
-        $model = new $modelClass($item);
-
         if ($type === Request::TYPE) {
             // Always have only a single item for the Request
-            $this->items[Request::TYPE] = [$model];
+            $this->items[Request::TYPE] = [$item];
         } else {
-            $this->items[$type][] = $model;
+            $this->items[$type][] = $item;
         }
     }
 
